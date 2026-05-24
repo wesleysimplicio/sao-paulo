@@ -7,6 +7,7 @@ bower_components/
 dist/
 build/
 out/
+target/
 .next/
 .nuxt/
 .svelte-kit/
@@ -96,6 +97,7 @@ tests/**
 !tests/unit/*.test.js
 !tests/e2e/
 !tests/e2e/*.spec.ts
+!tests/*.rs
 test-results/**
 coverage/**
 bootstrap.ps1

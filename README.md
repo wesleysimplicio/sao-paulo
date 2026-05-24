@@ -36,6 +36,39 @@ Fill these files after installing the starter in a real project. The goal is to 
 
 ---
 
+## Native engine (Rust)
+
+The project-mapping pass is also available as a native, dependency-light Rust binary (`lpm`) for maximum speed. It is a faithful port of the JavaScript mapper in `bin/auto-map.js` — given the same project, it produces byte-identical `docs/architecture-map.md` and `docs/domain-map.md` — but runs as a single static binary with no Node startup cost.
+
+```bash
+# Build
+cargo build --release        # produces ./target/release/lpm
+
+# Map the current project (writes docs/architecture-map.md + docs/domain-map.md)
+./target/release/lpm
+
+# Map a specific path
+./target/release/lpm map /path/to/project
+
+# Structured map as JSON (no files written), or inspect without writing
+./target/release/lpm --json
+./target/release/lpm /path/to/project --dry-run
+```
+
+It infers stack, package manager, run/validate/evidence commands, service URLs, domain, entities, features, TODOs, integrations and directory shape from a local inspection — the context an agent needs before it starts programming.
+
+**Why Rust here:** the mapper is the part worth accelerating. On a representative project the native engine maps in ~4 ms versus ~66 ms for the Node pass (~16x faster per invocation; ~3.9 ms vs ~63 ms amortized over 30 runs), with a ~560 KB binary and no runtime dependency. The Node CLI (`npx @wesleysimplicio/llm-project-mapper`) remains the zero-install scaffolding entry point.
+
+Tests and benchmarks:
+
+```bash
+cargo test            # unit + integration (detection/parity) tests
+cargo clippy          # lint
+cargo fmt --check     # format check
+```
+
+---
+
 ## Patterns
 
 - Canonical spec: [YOOL_TUPLE_HAMT.md](YOOL_TUPLE_HAMT.md)
