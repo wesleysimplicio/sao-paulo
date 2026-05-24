@@ -2,48 +2,26 @@
 
 ## Summary
 
-T11.5 foi concluida. A evidencia de benchmark ANE foi ampliada no
-`dense_baseline`: os casos `ane-requested` para Qwen e Llama ficam visiveis e
-cada caso passa a registrar mixed-dispatch, contadores ANE e estado termico. Em
-host nao-M5, a saida esperada e fallback observavel.
-
-T11.6 foi concluida. Foi adicionada cobertura Playwright para garantir que
-`--backend ane` em host nao elegivel exponha fallback explicito e mantenha o
-mixed dispatch desabilitado.
-
-## Previous Summary
-
-T11.3 e T11.4 foram concluidas. O runtime agora tem um coordenador explicito
-de mixed dispatch entre Metal e ANE, alem de um `ThermalMonitor` que aplica
-downgrade de modo sob pressao termica derivada do probe. O estado nativo e o
-CLI projetam estrategia mixed-dispatch, atividade ANE e sinais termicos sem
-esconder fallback.
+Implemented automatic project mapping during bootstrap. As soon as `llm-project-mapper` is applied to a host repo, it now performs a local inspection, infers stack/domain/team/integrations, pre-fills the starter-managed docs, and writes an inspection journal without waiting for a manual `INIT.md` handoff.
 
 ## Changed Files
 
-- runtime/ane/mixed_dispatch.h
-- runtime/ane/mixed_dispatch.cpp
-- runtime/adapters/dense_adapter_base.cpp
-- runtime/core/runtime_context.h
-- runtime/core/runtime_context.cpp
-- runtime/core/ius4v6_adapter.h
-- apps/cli/main.cpp
-- tests/unit/runtime_acceleration_contract_test.cpp
-- tests/unit/runtime_contract_runner.cpp
-- runtime/tuning/thermal_monitor.h
-- runtime/tuning/thermal_monitor.cpp
-- runtime/tuning/README.md
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/bin/auto-map.js`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/bin/cli.js`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/tests/unit/cli-install.test.js`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/tests/e2e/cli.spec.ts`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/README.md`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/README.pt-BR.md`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/CHANGELOG.md`
+- `/Users/wesleysimplicio/Projetos/skills/llm-project-mapper/package.json`
 
 ## Validation Commands
 
 ```bash
 npm run lint
-npm test -- --coverage
-npm run pack:dry
-cmake --build build --config Release
-ctest --test-dir build --output-on-failure -C Release
-npx playwright test --reporter=list,html tests/e2e/us4-cli.spec.ts
-build\runtime\benchmarks\dense_baseline.exe
+npm test
+npm run docs:build
+npm run test:e2e -- --reporter=list,html
 ```
 
 ## Validation Results
@@ -51,34 +29,31 @@ build\runtime\benchmarks\dense_baseline.exe
 - build: pass
 - tests: pass
 - lint: pass
-- e2e: pass
 
 ## Remaining Risks
 
-- T11.5-T11.6 ainda seguem pendentes no planejamento local.
-- Sprint 12 segue como proximo bloco de issues abertas.
-- A fonte termica atual e `probe-derived`; leitura real de IOPMrootDomain/powermetrics fica como aprofundamento Apple-host.
+- The automatic mapping pass is heuristic-based; projects with highly custom layouts may still benefit from an optional second-pass `INIT.md` refinement.
+- `taskflow inspect/run` could not be executed because `taskflow` is not installed in this environment.
 
 ## Suggested PR Title
 
-`feat(ane): add mixed dispatch and thermal monitor`
+`feat: auto-map host projects during bootstrap`
 
 ## Suggested PR Body
 
 ```md
 ## Summary
-- add mixed Metal/ANE dispatch coordinator and runtime integration
-- add probe-derived thermal monitor with explicit downgrade semantics
-- expose mixed dispatch and thermal telemetry in native generation results and CLI
-- cover ANE-eligible, metal-fallback, and thermal downgrade plans in native contract tests
+- add an automatic local mapping pass during bootstrap
+- pre-fill starter-managed docs immediately after apply
+- add unit and Playwright regression coverage for placeholder-clean generated output
+- bump package version to 0.3.0
 
 ## Validation
-- [x] lint
-- [x] unit and regression
-- [x] native build and ctest
-- [x] Playwright CLI E2E
-- [x] pack dry-run
+- [x] npm run lint
+- [x] npm test
+- [x] npm run docs:build
+- [x] npm run test:e2e -- --reporter=list,html
 
 ## Risks
-- ANE benchmark evidence and graceful fallback slices still remain for Sprint 11
+- mapping is heuristic and may need manual refinement in custom repos
 ```
