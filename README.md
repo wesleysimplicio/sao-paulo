@@ -1,21 +1,45 @@
-# LLM Project Mapper
+# São Paulo - Brazilian LLM
 
-> 🇺🇸 English. Leia em português: [README.pt-BR.md](README.pt-BR.md).
+> 🇧🇷 Brazilian LLM project. 🇺🇸 English — leia em português: [README.pt-BR.md](README.pt-BR.md).
 > Live docs site: [wesleysimplicio.github.io/llm-project-mapper](https://wesleysimplicio.github.io/llm-project-mapper/)
 
-AI-friendly, stack-neutral repository scaffold. Drop it into **any** project — new or existing — and any agent CLI (Claude Code, Codex, Cursor, GitHub Copilot, Aider with Deepseek/Kimi/MiniMax/GLM, Hermes, OpenClaw) gets the context it needs to ship work the same day.
+**São Paulo** is a Brazilian LLM initiative built on an AI-friendly, stack-neutral toolchain. At its core is a **native Rust project-mapping engine** plus a repository scaffold: drop it into **any** project — new or existing — and any agent CLI (Claude Code, Codex, Cursor, GitHub Copilot, Aider with Deepseek/Kimi/MiniMax/GLM, Hermes, OpenClaw) gets the context it needs to ship work the same day.
 
-> Starter pack, not a framework. Ships structure, instructions, process. Stack is yours.
+> Native speed first. The mapping engine is a single ~560 KB Rust binary that maps a project in milliseconds — see the [benchmark](#benchmark).
 
-![LLM Project Mapper hero](assets/llm-project-mapper-hero.png)
+![São Paulo - Brazilian LLM hero](assets/llm-project-mapper-hero.png)
 
 > Visual summary: drop the starter into a messy software project and it turns scattered context into structure, reusable skills, tests, docs, and guardrails for AI coding agents.
 
-### Watch: why llm-project-mapper? (53s)
+### Watch: why São Paulo? (53s)
 
 [![Watch the video](video/assets/why-cover.png)](https://github.com/wesleysimplicio/llm-project-mapper/raw/main/video/assets/why-llm-project-mapper.mp4)
 
 > Click the cover to play. Direct link: [`video/assets/why-llm-project-mapper.mp4`](video/assets/why-llm-project-mapper.mp4) · English version: [`video/assets/why-llm-project-mapper-en.mp4`](video/assets/why-llm-project-mapper-en.mp4) · both renders now ship with narration plus burned-in captions.
+
+---
+
+## Benchmark
+
+São Paulo's mapping engine was rewritten in **Rust** (`lpm`) for speed. It is a faithful port of the original Node mapper (`bin/auto-map.js`) and produces **byte-for-byte identical** `docs/architecture-map.md` and `docs/domain-map.md` — but with no Node startup cost.
+
+| Metric | Node (`bin/auto-map.js`) | Native Rust (`lpm`) | Speedup |
+|---|---|---|---|
+| Single map (sample project) | ~66 ms | ~4 ms | **~16x** |
+| 30 maps (amortized) | 1.90 s (~63 ms/run) | 0.12 s (~3.9 ms/run) | **~16x** |
+| Map this repository (full tree) | — | ~8 ms | — |
+| Binary size | — (needs Node.js runtime) | ~560 KB static binary | — |
+| Runtime dependencies | Node.js | none (1 build dep: `serde_json`) | — |
+
+> **Parity & quality gates:** output verified byte-for-byte against the Node mapper, plus `cargo test` (6 unit + 4 integration), `cargo clippy -D warnings`, and `cargo fmt --check` all green.
+> Measured on Linux x86-64, `--release` build (`opt-level=3`, LTO). Absolute numbers vary by hardware and repository size; the ~16x ratio comes mostly from eliminating Node process startup and a faster file walk.
+
+Run it yourself:
+
+```bash
+cargo build --release
+time ./target/release/lpm . --dry-run
+```
 
 ---
 
@@ -36,9 +60,9 @@ Fill these files after installing the starter in a real project. The goal is to 
 
 ---
 
-## Native engine (Rust)
+## Native engine (Rust) — the São Paulo mapper
 
-The project-mapping pass is also available as a native, dependency-light Rust binary (`lpm`) for maximum speed. It is a faithful port of the JavaScript mapper in `bin/auto-map.js` — given the same project, it produces byte-identical `docs/architecture-map.md` and `docs/domain-map.md` — but runs as a single static binary with no Node startup cost.
+São Paulo's project-mapping pass runs as a native, dependency-light Rust binary (`lpm`) for maximum speed (see the [benchmark](#benchmark)). It is a faithful port of the JavaScript mapper in `bin/auto-map.js` — given the same project, it produces byte-identical `docs/architecture-map.md` and `docs/domain-map.md` — but runs as a single static binary with no Node startup cost.
 
 ```bash
 # Build
@@ -57,7 +81,7 @@ cargo build --release        # produces ./target/release/lpm
 
 It infers stack, package manager, run/validate/evidence commands, service URLs, domain, entities, features, TODOs, integrations and directory shape from a local inspection — the context an agent needs before it starts programming.
 
-**Why Rust here:** the mapper is the part worth accelerating. On a representative project the native engine maps in ~4 ms versus ~66 ms for the Node pass (~16x faster per invocation; ~3.9 ms vs ~63 ms amortized over 30 runs), with a ~560 KB binary and no runtime dependency. The Node CLI (`npx @wesleysimplicio/llm-project-mapper`) remains the zero-install scaffolding entry point.
+**Why Rust here:** the mapper is the part worth accelerating. See the [Benchmark](#benchmark) section for the numbers (~16x faster per invocation, ~560 KB binary, no runtime dependency). The Node CLI (`npx @wesleysimplicio/llm-project-mapper`) remains the zero-install scaffolding entry point.
 
 Tests and benchmarks:
 
@@ -93,9 +117,9 @@ Same command everywhere. No bash dependency, no clone, no global install.
 
 ---
 
-## What LLM Project Mapper Changes
+## What São Paulo Changes
 
-The point of the starter is not “more files”. It is faster agent execution with less ambiguity, less tribal knowledge, and safer delivery loops.
+The point of São Paulo is not “more files”. It is faster agent execution with less ambiguity, less tribal knowledge, and safer delivery loops — starting from a project map produced in milliseconds.
 
 #### 01 · From project chaos to operational structure
 
