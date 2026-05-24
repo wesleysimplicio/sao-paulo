@@ -1,5 +1,0 @@
-{
-  "model": "toy-bitnet-tokenizer",
-  "version": 1,
-  "normalizer": "whitespace"
-}
