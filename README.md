@@ -114,6 +114,26 @@ Only **2** tuples are materialized for a million-subagent task; the rest stay vi
 
 ---
 
+## X virality scoring (`lpm virality`)
+
+São Paulo also knows how to score posts for the X (For You) algorithm — a native Rust port of the [`x-virality-skills`](https://github.com/wesleysimplicio/x-virality-skills) scorer (`src/x_virality_tools/score_simulator.py`). It combines Phoenix per-candidate engagement predictions with the algorithm's scoring weights (reply `13.5`, follow-author `24.0`, profile-click `12.0`, report `-100.0`, …), then applies the negative-score offset, author-diversity decay, and the out-of-network factor.
+
+```bash
+lpm virality --input candidates.json          # human-readable report
+lpm virality --input candidates.json --json    # JSON score reports
+```
+
+`candidates.json` is a single candidate object or an array, each shaped like:
+
+```json
+{ "scores": { "favorite": 0.4, "reply": 0.05, "vqv": 0.3 },
+  "in_network": true, "video_duration_ms": 8000, "author_id": 1 }
+```
+
+The pipeline is `combined_weighted_score → offset → author-diversity → out-of-network`, with VQV (video quality view) signals gated on a minimum video duration. **Output matches the Python `score_simulator` exactly** (combined/offset/diversity/final within 1e-9), verified by parity tests; covered by `cargo test`.
+
+---
+
 ## Patterns
 
 - Canonical spec: [YOOL_TUPLE_HAMT.md](YOOL_TUPLE_HAMT.md)

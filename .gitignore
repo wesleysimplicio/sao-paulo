@@ -77,14 +77,12 @@ INIT.md
 _BOOTSTRAP.md
 .agents/
 .agents/**
-.claude/
-.claude/**
+.claude/*
+!.claude/settings.json
 .codex/
 .codex/**
 .github/
 .github/**
-.skills/
-.skills/**
 .specs/
 .specs/**
 docs/**
