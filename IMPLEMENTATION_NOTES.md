@@ -53,9 +53,12 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 - Sempre que uma skill for instalada/ativada ou um recurso for implementado, atualizar as seções acima.
 - O hook `PostToolUse` (matcher `Edit|Write`) em `.claude/settings.json` acrescenta uma linha
   timestamped na seção abaixo a cada modificação de arquivo.
-- Observação: `.claude/` é gitignored neste repo, então a configuração do hook é local da sessão
-  (container efêmero) — este arquivo (`IMPLEMENTATION_NOTES.md`, commitado) é o registro durável.
+- `.claude/settings.json` é commitado (exceção no `.gitignore`: `.claude/*` + `!.claude/settings.json`),
+  então o hook é persistente entre sessões/containers. `settings.local.json` e `.claude/hooks/`
+  seguem ignorados (estado local).
 
 ## Change log automático (hook)
 
 <!-- O hook PostToolUse (Edit|Write) acrescenta entradas "UTC | caminho" abaixo desta linha. -->
+2026-05-25T01:18:54Z | /home/user/sao-paulo/.gitignore
+2026-05-25T01:19:14Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
