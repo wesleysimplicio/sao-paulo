@@ -86,6 +86,9 @@ Por isso, **o `description` é a coisa mais importante do frontmatter**. Escreva
 | [`ralph-loop/`](./ralph-loop/SKILL.md) | **Always-on.** Loop autônomo read→plan→execute→lint→unit→e2e→fix→repeat até DoD verde |
 | [`caveman/`](./caveman/SKILL.md) | **Always-on.** Modo terse de resposta para economizar tokens (~65% saída) |
 | [`everything-claude-code/`](./everything-claude-code/SKILL.md) | **Always-on.** Catálogo + protocolo de uso da suite ECC (60 agents, 221 skills) em paralelo |
+| [`lpm-map/`](./lpm-map/SKILL.md) | **Engine nativo.** Mapear um projeto local via `lpm map` (stack, comandos, URLs, domínio, integrações) |
+| [`lpm-yool/`](./lpm-yool/SKILL.md) | **Engine nativo.** Tuple-space/HAMT via `lpm yool` — `batch_spawn` para 1M+ subagents virtuais |
+| [`lpm-virality/`](./lpm-virality/SKILL.md) | **Engine nativo.** Scoring de posts no X (For You) via `lpm virality` |
 | [`hyperframes/`](./hyperframes/SKILL.md) | Autoria de composição HTML para vídeo (timing, GSAP, captions, transitions, audio-reactive) |
 | [`hyperframes-cli/`](./hyperframes-cli/SKILL.md) | CLI `npx hyperframes` (init, lint, inspect, preview, render, doctor) |
 | [`hyperframes-media/`](./hyperframes-media/SKILL.md) | Preprocessing de assets (`tts`, `transcribe`, `remove-background`) |

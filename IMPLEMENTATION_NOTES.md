@@ -19,6 +19,8 @@ Skills implantadas em `.skills/` (do `llm-project-mapper`, agora commitadas / ve
 - Animação/web/render: `animejs`, `gsap`, `waapi`, `css-animations`, `lottie`, `tailwind`,
   `three`, `typegpu`, `remotion-to-hyperframes`, `website-to-hyperframes`.
 - HyperFrames: `hyperframes`, `hyperframes-cli`, `hyperframes-media`, `hyperframes-registry`.
+- **Engine nativo (criadas aqui):** `lpm-map`, `lpm-yool`, `lpm-virality` — expõem os subcomandos
+  do binário `lpm` como skills do agente (trigger + steps + DoD), tornando as capacidades nativas.
 
 `.skills/` deixou de ser gitignored (removidas as linhas `.skills/` e `.skills/**`), então as 25
 skills passam a versionar no repo. Licenças/atribuição em `.skills/UPSTREAM-LICENSE` e `.skills/NOTICE.md`.
@@ -73,3 +75,8 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 2026-05-25T01:19:14Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
 2026-05-25T01:20:27Z | /home/user/sao-paulo/.gitignore
 2026-05-25T01:20:43Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
+2026-05-25T01:24:02Z | /home/user/sao-paulo/.skills/lpm-map/SKILL.md
+2026-05-25T01:24:22Z | /home/user/sao-paulo/.skills/lpm-yool/SKILL.md
+2026-05-25T01:24:38Z | /home/user/sao-paulo/.skills/lpm-virality/SKILL.md
+2026-05-25T01:25:05Z | /home/user/sao-paulo/.skills/README.md
+2026-05-25T01:25:19Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
