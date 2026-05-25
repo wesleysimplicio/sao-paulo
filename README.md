@@ -93,6 +93,27 @@ cargo fmt --check     # format check
 
 ---
 
+## YOOL tuple-space runtime (`lpm yool`)
+
+São Paulo also ships a native Rust port of the **YOOL / tuple / HAMT** capability-addressing kernel from [`simplicio-prompt`](https://github.com/wesleysimplicio/simplicio-prompt). It implements the deterministic core: Linda-style tuple-space primitives (`out`/`in`/`rd`), Hilbert-indexed tuple maps, content-addressable receipts, env-driven lane concurrency policy, `compress_token`/`prune_idle`, and the headline `batch_spawn` — a lazy hierarchical fan-out that represents **1,000,000+ virtual subagents without enumerating them**.
+
+```bash
+lpm yool                              # depth=4, branching=32 -> 1,048,576 virtual subagents
+lpm yool --depth 4 --branching 32 --json
+```
+
+```text
+[Tuple Space Snapshot] 3 tuples, 1 lane(s)
+[Active Agents/Subagents] 2
+[Total Agents/Subagents] 1048578
+[Próximo Yool a executar] codex_worker
+[Resultado parcial] batch_spawn@... -> 1048576 virtual subagents (depth=4, branching=32, materialized=2)
+```
+
+Only **2** tuples are materialized for a million-subagent task; the rest stay virtual (counted, never enumerated). The snapshot counts match the Python reference kernel exactly. The provider-facing runtime (async lane worker pool, circuit breaker, jittered backoff) stays in the canonical spec; this port covers the deterministic logic. Receipts use a dependency-free FNV-1a content hash (stable content addresses, not the Python blake2b digest).
+
+---
+
 ## Patterns
 
 - Canonical spec: [YOOL_TUPLE_HAMT.md](YOOL_TUPLE_HAMT.md)
