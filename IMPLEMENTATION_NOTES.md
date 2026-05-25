@@ -12,7 +12,16 @@ Ativadas por padrão no início da sessão (via `.claude/settings.json` SessionS
 - **ralph-loop** — loop `read → plan → execute → lint → unit → e2e → fix → repeat` até DoD verde.
 - **everything-claude-code** — bundle de agents/skills; reviewers da stack + security-reviewer após edits.
 
-Sob demanda (`.skills/`): `rtk-cli`, `playwright-e2e`, `conventional-commits`, `_template`.
+Skills implantadas em `.skills/` (do `llm-project-mapper`, agora commitadas / versionadas):
+
+- Núcleo do método: `caveman`, `ralph-loop`, `everything-claude-code`, `conventional-commits`,
+  `playwright-e2e`, `rtk-cli`, `contribute-catalog`, `_template`.
+- Animação/web/render: `animejs`, `gsap`, `waapi`, `css-animations`, `lottie`, `tailwind`,
+  `three`, `typegpu`, `remotion-to-hyperframes`, `website-to-hyperframes`.
+- HyperFrames: `hyperframes`, `hyperframes-cli`, `hyperframes-media`, `hyperframes-registry`.
+
+`.skills/` deixou de ser gitignored (removidas as linhas `.skills/` e `.skills/**`), então as 25
+skills passam a versionar no repo. Licenças/atribuição em `.skills/UPSTREAM-LICENSE` e `.skills/NOTICE.md`.
 
 Skills user-invocáveis disponíveis no harness: `update-config`, `verify`, `code-review`,
 `security-review`, `review`, `run`, `init`, `loop`, `claude-api`, `session-start-hook`,
@@ -62,3 +71,5 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 <!-- O hook PostToolUse (Edit|Write) acrescenta entradas "UTC | caminho" abaixo desta linha. -->
 2026-05-25T01:18:54Z | /home/user/sao-paulo/.gitignore
 2026-05-25T01:19:14Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
+2026-05-25T01:20:27Z | /home/user/sao-paulo/.gitignore
+2026-05-25T01:20:43Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
