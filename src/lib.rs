@@ -6,6 +6,7 @@
 //! directory shape, then renders the project map.
 
 pub mod detect;
+pub mod hamt;
 pub mod profile;
 pub mod render;
 pub mod scan;

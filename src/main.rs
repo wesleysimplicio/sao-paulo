@@ -22,6 +22,7 @@ USAGE
   lpm [map] [path] [options]
   lpm yool [options]
   lpm virality --input <file.json> [--json]
+  lpm hamt [project-root] [--source <AGENTS.md>] [--output <.catalog/agents.json>]
 
 OPTIONS (map)
   --json        Print the structured map as JSON to stdout (no files written)
@@ -37,6 +38,11 @@ OPTIONS (yool)
 OPTIONS (virality)
   --input <file>    JSON candidate object or array (X For You signals)
   --json            Emit the score report(s) as JSON
+
+OPTIONS (hamt)
+  [project-root]    Root used to resolve defaults (default .)
+  --source <path>   AGENTS.md to parse (default <root>/AGENTS.md)
+  --output <path>   Catalog JSON output (default <root>/.catalog/agents.json)
 
 GLOBAL
   -V, --version Print version
@@ -291,6 +297,62 @@ fn run_virality(rest: Vec<String>) -> ExitCode {
     ExitCode::SUCCESS
 }
 
+fn run_hamt(rest: Vec<String>) -> ExitCode {
+    let mut project_root: Option<String> = None;
+    let mut source: Option<String> = None;
+    let mut output: Option<String> = None;
+
+    let mut iter = rest.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "--source" => source = iter.next(),
+            "--output" => output = iter.next(),
+            "-h" | "--help" => {
+                print_help();
+                return ExitCode::SUCCESS;
+            }
+            other if other.starts_with('-') => {
+                eprintln!("Unknown hamt option: {other}");
+                return ExitCode::from(1);
+            }
+            other => {
+                if project_root.is_none() {
+                    project_root = Some(other.to_string());
+                } else {
+                    eprintln!("Unexpected argument: {other}");
+                    return ExitCode::from(1);
+                }
+            }
+        }
+    }
+
+    let root = Path::new(project_root.as_deref().unwrap_or("."));
+    let source_path = source
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root.join("AGENTS.md"));
+    let output_path = output
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root.join(".catalog").join("agents.json"));
+
+    if !source_path.exists() {
+        eprintln!("[build] AGENTS source not found: {}", source_path.display());
+        return ExitCode::from(2);
+    }
+
+    match lpm::hamt::run(&source_path, &output_path) {
+        Ok(lines) => {
+            for line in lines {
+                println!("{line}");
+            }
+            ExitCode::SUCCESS
+        }
+        Err(e) => {
+            eprintln!("[build] {e}");
+            ExitCode::from(1)
+        }
+    }
+}
+
 fn main() -> ExitCode {
     let raw: Vec<String> = std::env::args().skip(1).collect();
     if raw.first().map(|s| s == "yool").unwrap_or(false) {
@@ -298,6 +360,9 @@ fn main() -> ExitCode {
     }
     if raw.first().map(|s| s == "virality").unwrap_or(false) {
         return run_virality(raw.into_iter().skip(1).collect());
+    }
+    if raw.first().map(|s| s == "hamt").unwrap_or(false) {
+        return run_hamt(raw.into_iter().skip(1).collect());
     }
 
     let args = match parse_args() {

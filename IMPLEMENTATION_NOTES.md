@@ -31,17 +31,19 @@ Skills user-invocáveis disponíveis no harness: `update-config`, `verify`, `cod
 
 ## Engine nativo `lpm` (Rust)
 
-Binário nativo único (`cargo build --release` → `target/release/lpm`), dependência de build: `serde_json`.
+Binário nativo único (`cargo build --release` → `target/release/lpm`), deps de build: `serde_json`, `blake2`, `sha2`.
 
 | Subcomando | O que faz | Origem portada |
 |---|---|---|
 | `lpm map [path]` | Mapeia um projeto (stack, comandos, URLs, domínio, entidades, integrações) e gera `docs/architecture-map.md` + `docs/domain-map.md` | `bin/auto-map.js` (llm-project-mapper) |
 | `lpm yool [--depth N --branching N]` | Tuple-space / HAMT: `batch_spawn` representa 1M+ subagents virtuais sem enumeração | `kernel/yool_tuple_kernel.py` (simplicio-prompt) |
 | `lpm virality --input <file.json>` | Scoring de posts no X (For You): pesos Phoenix, offset, author-diversity, OON, VQV gating | `score_simulator.py` (x-virality-skills) |
+| `lpm hamt [root]` | Build do catálogo YOOL/HAMT do `AGENTS.md` (BLAKE2b-64→30bits, HAMT, id=sha256) — sem Python | `scripts/build_hamt.py` |
 
 Módulos: `src/scan.rs`, `src/text.rs`, `src/detect.rs`, `src/profile.rs`, `src/render.rs`,
-`src/yool.rs`, `src/virality.rs`, CLI em `src/main.rs`, lib em `src/lib.rs`.
+`src/yool.rs`, `src/virality.rs`, `src/hamt.rs`, CLI em `src/main.rs`, lib em `src/lib.rs`.
 Gates: `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check`.
+Skills nativas: `lpm-map`, `lpm-yool`, `lpm-virality`, `lpm-hamt`.
 
 ## Histórico de implementação (PRs)
 
@@ -80,3 +82,18 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 2026-05-25T01:24:38Z | /home/user/sao-paulo/.skills/lpm-virality/SKILL.md
 2026-05-25T01:25:05Z | /home/user/sao-paulo/.skills/README.md
 2026-05-25T01:25:19Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
+2026-05-25T02:55:56Z | /home/user/sao-paulo/Cargo.toml
+2026-05-25T02:57:06Z | /home/user/sao-paulo/src/hamt.rs
+2026-05-25T02:57:11Z | /home/user/sao-paulo/src/lib.rs
+2026-05-25T02:57:16Z | /home/user/sao-paulo/src/main.rs
+2026-05-25T02:57:23Z | /home/user/sao-paulo/src/main.rs
+2026-05-25T02:57:28Z | /home/user/sao-paulo/src/main.rs
+2026-05-25T02:57:33Z | /home/user/sao-paulo/src/main.rs
+2026-05-25T02:57:46Z | /home/user/sao-paulo/src/main.rs
+2026-05-25T02:58:23Z | /home/user/sao-paulo/src/hamt.rs
+2026-05-25T02:58:28Z | /home/user/sao-paulo/src/hamt.rs
+2026-05-25T02:58:39Z | /home/user/sao-paulo/src/hamt.rs
+2026-05-25T02:59:22Z | /home/user/sao-paulo/src/hamt.rs
+2026-05-25T03:00:19Z | /home/user/sao-paulo/.skills/lpm-hamt/SKILL.md
+2026-05-25T03:00:29Z | /home/user/sao-paulo/.skills/README.md
+2026-05-25T03:00:44Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
