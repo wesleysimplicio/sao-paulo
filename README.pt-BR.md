@@ -1,20 +1,44 @@
-# LLM Project Mapper
+# São Paulo - Brazilian LLM
 
 > 🇧🇷 Versão em português. Read this in English: [README.md](README.md).
 
-Esqueleto de repositório AI-friendly, neutro de stack. Joga em **qualquer** projeto — novo ou existente — e qualquer agente CLI (Claude Code, Codex, Cursor, GitHub Copilot, Aider com Deepseek/Kimi/MiniMax/GLM, Hermes, OpenClaw) ganha o contexto que precisa pra entregar trabalho no mesmo dia.
+**São Paulo** é uma iniciativa de LLM brasileira construída sobre um toolchain AI-friendly e neutro de stack. No núcleo está um **engine de mapeamento de projetos nativo em Rust**, mais um esqueleto de repositório: joga em **qualquer** projeto — novo ou existente — e qualquer agente CLI (Claude Code, Codex, Cursor, GitHub Copilot, Aider com Deepseek/Kimi/MiniMax/GLM, Hermes, OpenClaw) ganha o contexto que precisa pra entregar trabalho no mesmo dia.
 
-> Starter pack, não framework. Entrega estrutura, instruções, processo. A stack é sua.
+> Velocidade nativa primeiro. O engine de mapeamento é um único binário Rust de ~560 KB que mapeia um projeto em milissegundos — veja o [benchmark](#benchmark).
 
-![Hero do LLM Project Mapper](assets/llm-project-mapper-hero.png)
+![Hero do São Paulo - Brazilian LLM](assets/llm-project-mapper-hero.png)
 
 > Resumo visual: joga o starter em um projeto baguncado e ele transforma contexto espalhado em estrutura, skills reutilizaveis, testes, docs e guardrails para agentes de coding.
 
-### Assista: por que llm-project-mapper? (53s)
+### Assista: por que São Paulo? (53s)
 
 [![Assistir ao vídeo](video/assets/why-cover.png)](https://github.com/wesleysimplicio/llm-project-mapper/raw/main/video/assets/why-llm-project-mapper.mp4)
 
 > Clica na capa pra rodar. Link direto: [`video/assets/why-llm-project-mapper.mp4`](video/assets/why-llm-project-mapper.mp4) · Versão em inglês: [`video/assets/why-llm-project-mapper-en.mp4`](video/assets/why-llm-project-mapper-en.mp4).
+
+---
+
+## Benchmark
+
+O engine de mapeamento do São Paulo foi reescrito em **Rust** (`lpm`) para ganhar velocidade. É um port fiel do mapper original em Node (`bin/auto-map.js`) e gera `docs/architecture-map.md` e `docs/domain-map.md` **byte a byte idênticos** — mas sem o custo de startup do Node.
+
+| Métrica | Node (`bin/auto-map.js`) | Rust nativo (`lpm`) | Ganho |
+|---|---|---|---|
+| Um mapeamento (projeto de amostra) | ~66 ms | ~4 ms | **~16x** |
+| 30 mapeamentos (amortizado) | 1,90 s (~63 ms/run) | 0,12 s (~3,9 ms/run) | **~16x** |
+| Mapear este repositório (árvore inteira) | — | ~8 ms | — |
+| Tamanho do binário | — (precisa do runtime Node.js) | binário estático de ~560 KB | — |
+| Dependências de runtime | Node.js | nenhuma (1 dep de build: `serde_json`) | — |
+
+> **Paridade e qualidade:** saída verificada byte a byte contra o mapper Node, além de `cargo test` (6 unit + 4 integração), `cargo clippy -D warnings` e `cargo fmt --check` todos verdes.
+> Medido em Linux x86-64, build `--release` (`opt-level=3`, LTO). Os números absolutos variam por hardware e tamanho do repo; o fator ~16x vem principalmente de eliminar o startup de processo do Node e de um walk de arquivos mais rápido.
+
+Rode você mesmo:
+
+```bash
+cargo build --release
+time ./target/release/lpm . --dry-run
+```
 
 ---
 
