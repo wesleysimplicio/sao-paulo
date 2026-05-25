@@ -6,6 +6,7 @@ use std::process::ExitCode;
 
 use lpm::profile::build_profile;
 use lpm::render::{render_architecture_map, render_domain_map, render_json};
+use lpm::virality::{candidates_from_payload, score_batch, ScoreOptions, ScoringWeights};
 use lpm::yool::build_default_space;
 use serde_json::{Map, Value};
 
@@ -20,6 +21,7 @@ Map a project locally so an LLM agent has context before it programs.
 USAGE
   lpm [map] [path] [options]
   lpm yool [options]
+  lpm virality --input <file.json> [--json]
 
 OPTIONS (map)
   --json        Print the structured map as JSON to stdout (no files written)
@@ -31,6 +33,10 @@ OPTIONS (yool)
   --branching N     Children per level (default 32 -> 32^4 = 1,048,576)
   --threshold N     Compression threshold (default 128)
   --json            Print the tuple-space snapshot as JSON
+
+OPTIONS (virality)
+  --input <file>    JSON candidate object or array (X For You signals)
+  --json            Emit the score report(s) as JSON
 
 GLOBAL
   -V, --version Print version
@@ -218,10 +224,80 @@ fn run_yool(rest: Vec<String>) -> ExitCode {
     ExitCode::SUCCESS
 }
 
+fn run_virality(rest: Vec<String>) -> ExitCode {
+    let mut json_out = false;
+    let mut input: Option<String> = None;
+
+    let mut iter = rest.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "--json" => json_out = true,
+            "--input" => input = iter.next(),
+            "-h" | "--help" => {
+                print_help();
+                return ExitCode::SUCCESS;
+            }
+            other => {
+                eprintln!("Unknown virality option: {other}");
+                return ExitCode::from(1);
+            }
+        }
+    }
+
+    let path = match input {
+        Some(p) => p,
+        None => {
+            print_help();
+            return ExitCode::SUCCESS;
+        }
+    };
+
+    let raw = match fs::read_to_string(&path) {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("Failed to read {path}: {e}");
+            return ExitCode::from(1);
+        }
+    };
+    let payload: Value = match serde_json::from_str(&raw) {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("Invalid JSON in {path}: {e}");
+            return ExitCode::from(1);
+        }
+    };
+
+    let candidates = candidates_from_payload(&payload);
+    let reports = score_batch(
+        &candidates,
+        &ScoringWeights::default(),
+        &ScoreOptions::default(),
+    );
+
+    if json_out {
+        let arr: Vec<Value> = reports.iter().map(|r| r.to_value()).collect();
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&Value::Array(arr)).unwrap_or_default()
+        );
+        return ExitCode::SUCCESS;
+    }
+
+    for (i, report) in reports.iter().enumerate() {
+        println!("Candidate {}", i + 1);
+        println!("{}", report.explain());
+        println!();
+    }
+    ExitCode::SUCCESS
+}
+
 fn main() -> ExitCode {
     let raw: Vec<String> = std::env::args().skip(1).collect();
     if raw.first().map(|s| s == "yool").unwrap_or(false) {
         return run_yool(raw.into_iter().skip(1).collect());
+    }
+    if raw.first().map(|s| s == "virality").unwrap_or(false) {
+        return run_virality(raw.into_iter().skip(1).collect());
     }
 
     let args = match parse_args() {
