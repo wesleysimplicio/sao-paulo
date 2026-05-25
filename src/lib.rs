@@ -10,5 +10,6 @@ pub mod profile;
 pub mod render;
 pub mod scan;
 pub mod text;
+pub mod yool;
 
 pub use profile::{build_profile, Commands, Feature, Profile};

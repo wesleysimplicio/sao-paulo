@@ -6,6 +6,8 @@ use std::process::ExitCode;
 
 use lpm::profile::build_profile;
 use lpm::render::{render_architecture_map, render_domain_map, render_json};
+use lpm::yool::build_default_space;
+use serde_json::{Map, Value};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -17,11 +19,20 @@ Map a project locally so an LLM agent has context before it programs.
 
 USAGE
   lpm [map] [path] [options]
+  lpm yool [options]
 
-OPTIONS
+OPTIONS (map)
   --json        Print the structured map as JSON to stdout (no files written)
   --write       Write docs/architecture-map.md and docs/domain-map.md (default)
   --dry-run     Inspect and print a summary without writing files
+
+OPTIONS (yool)
+  --depth N         Hierarchy depth (default 4)
+  --branching N     Children per level (default 32 -> 32^4 = 1,048,576)
+  --threshold N     Compression threshold (default 128)
+  --json            Print the tuple-space snapshot as JSON
+
+GLOBAL
   -V, --version Print version
   -h, --help    Print this help
 
@@ -30,6 +41,7 @@ EXAMPLES
   lpm map .
   lpm --json
   lpm /path/to/project --dry-run
+  lpm yool --depth 4 --branching 32
 "#
     );
 }
@@ -126,7 +138,92 @@ fn parse_args() -> Result<Args, i32> {
     })
 }
 
+fn run_yool(rest: Vec<String>) -> ExitCode {
+    let mut json_out = false;
+    let mut depth: i64 = 4;
+    let mut branching: i64 = 32;
+    let mut threshold: i64 = 128;
+
+    let mut iter = rest.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "--json" => json_out = true,
+            "--depth" => depth = iter.next().and_then(|v| v.parse().ok()).unwrap_or(depth),
+            "--branching" => {
+                branching = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(branching)
+            }
+            "--threshold" => {
+                threshold = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(threshold)
+            }
+            "-h" | "--help" => {
+                print_help();
+                return ExitCode::SUCCESS;
+            }
+            other => {
+                eprintln!("Unknown yool option: {other}");
+                return ExitCode::from(1);
+            }
+        }
+    }
+
+    let (mut space, root) = build_default_space();
+    space.spawn_agent(root, "hamt_builder", {
+        let mut d = Map::new();
+        d.insert("status".into(), Value::String("ready".into()));
+        d
+    });
+    let receipt = match space.batch_spawn(
+        root,
+        "codex_worker",
+        depth,
+        branching,
+        Some(threshold),
+        None,
+    ) {
+        Ok(r) => r,
+        Err(e) => {
+            eprintln!("batch_spawn error: {e}");
+            return ExitCode::from(1);
+        }
+    };
+    space.hookwall("main_wall", "capability_root", "hook");
+
+    let snap = space.snapshot();
+    if json_out {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&snap).unwrap_or_default()
+        );
+        return ExitCode::SUCCESS;
+    }
+
+    let lanes = snap["lanes"].as_object().map(|m| m.len()).unwrap_or(0);
+    println!(
+        "[Tuple Space Snapshot] {} tuples, {} lane(s)",
+        snap["tuples"], lanes
+    );
+    println!("[Active Agents/Subagents] {}", snap["active_agents"]);
+    println!("[Total Agents/Subagents] {}", snap["total_agents"]);
+    println!("[Próximo Yool a executar] codex_worker");
+    println!(
+        "[Resultado parcial] batch_spawn@{} -> {} virtual subagents (depth={}, branching={}, materialized={})",
+        receipt.receipt_id, receipt.virtual_agents, receipt.depth, receipt.branching, snap["active_agents"]
+    );
+    ExitCode::SUCCESS
+}
+
 fn main() -> ExitCode {
+    let raw: Vec<String> = std::env::args().skip(1).collect();
+    if raw.first().map(|s| s == "yool").unwrap_or(false) {
+        return run_yool(raw.into_iter().skip(1).collect());
+    }
+
     let args = match parse_args() {
         Ok(a) => a,
         Err(code) => return ExitCode::from(code as u8),
