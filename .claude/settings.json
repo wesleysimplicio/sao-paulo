@@ -8,6 +8,10 @@
           {
             "type": "command",
             "command": "node ./bin/hook-runner.js claude session-start"
+          },
+          {
+            "type": "command",
+            "command": "bash ./scripts/setup-simplicio.sh"
           }
         ]
       }
@@ -34,6 +38,15 @@
           {
             "type": "command",
             "command": "node ./bin/hook-runner.js claude pre-commit-if-needed"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/hooks/pre-code-simplicio.sh"
           }
         ]
       }
