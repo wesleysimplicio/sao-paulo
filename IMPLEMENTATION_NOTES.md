@@ -132,3 +132,4 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 2026-05-26T01:32:39Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
 2026-05-26T01:32:43Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
 2026-05-26T01:32:58Z | /home/user/sao-paulo/CHANGELOG.md
+2026-05-26T01:34:40Z | /home/user/sao-paulo/.gitignore
