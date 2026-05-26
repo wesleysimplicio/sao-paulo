@@ -6,6 +6,7 @@ use std::process::ExitCode;
 
 use lpm::profile::build_profile;
 use lpm::render::{render_architecture_map, render_domain_map, render_json};
+use lpm::skillopt::{explain as skillopt_explain, optimize, render_skill, Dataset, OptConfig};
 use lpm::virality::{candidates_from_payload, score_batch, ScoreOptions, ScoringWeights};
 use lpm::yool::build_default_space;
 use serde_json::{Map, Value};
@@ -23,6 +24,7 @@ USAGE
   lpm yool [options]
   lpm virality --input <file.json> [--json]
   lpm hamt [project-root] [--source <AGENTS.md>] [--output <.catalog/agents.json>]
+  lpm skillopt --input <file.json> [--output skill.md] [--json] [training opts]
 
 OPTIONS (map)
   --json        Print the structured map as JSON to stdout (no files written)
@@ -44,6 +46,16 @@ OPTIONS (hamt)
   --source <path>   AGENTS.md to parse (default <root>/AGENTS.md)
   --output <path>   Catalog JSON output (default <root>/.catalog/agents.json)
 
+OPTIONS (skillopt)
+  --input <file>    JSON: {{ skill, tasks (scored rollouts), catalog }}
+  --output <file>   Write the optimized skill markdown to <file>
+  --json            Emit the full training history + result as JSON
+  --epochs N        Optimization epochs (default 3)
+  --batch-size N    Train minibatch size; 0 = one batch of all train (default 0)
+  --edit-budget N   Textual learning rate: max edits per candidate (default 3)
+  --gate-margin F   Min val improvement to accept an edit (default 0.0)
+  --slow-cap N      Max stale-key prunes per epoch, slow update (default 1)
+
 GLOBAL
   -V, --version Print version
   -h, --help    Print this help
@@ -54,6 +66,7 @@ EXAMPLES
   lpm --json
   lpm /path/to/project --dry-run
   lpm yool --depth 4 --branching 32
+  lpm skillopt --input rollouts.json --output skill.md
 "#
     );
 }
@@ -353,6 +366,109 @@ fn run_hamt(rest: Vec<String>) -> ExitCode {
     }
 }
 
+fn run_skillopt(rest: Vec<String>) -> ExitCode {
+    let mut json_out = false;
+    let mut input: Option<String> = None;
+    let mut output: Option<String> = None;
+    let mut cfg = OptConfig::default();
+
+    let mut iter = rest.into_iter();
+    while let Some(arg) = iter.next() {
+        match arg.as_str() {
+            "--json" => json_out = true,
+            "--input" => input = iter.next(),
+            "--output" => output = iter.next(),
+            "--epochs" => {
+                cfg.epochs = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(cfg.epochs)
+            }
+            "--batch-size" => {
+                cfg.batch_size = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(cfg.batch_size)
+            }
+            "--edit-budget" => {
+                cfg.edit_budget = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(cfg.edit_budget)
+            }
+            "--gate-margin" => {
+                cfg.gate_margin = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(cfg.gate_margin)
+            }
+            "--slow-cap" => {
+                cfg.slow_cap = iter
+                    .next()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(cfg.slow_cap)
+            }
+            "-h" | "--help" => {
+                print_help();
+                return ExitCode::SUCCESS;
+            }
+            other => {
+                eprintln!("Unknown skillopt option: {other}");
+                return ExitCode::from(1);
+            }
+        }
+    }
+
+    let path = match input {
+        Some(p) => p,
+        None => {
+            print_help();
+            return ExitCode::SUCCESS;
+        }
+    };
+
+    let raw = match fs::read_to_string(&path) {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("Failed to read {path}: {e}");
+            return ExitCode::from(1);
+        }
+    };
+    let payload: Value = match serde_json::from_str(&raw) {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("Invalid JSON in {path}: {e}");
+            return ExitCode::from(1);
+        }
+    };
+
+    let dataset = Dataset::from_value(&payload);
+    let result = optimize(&dataset, &cfg);
+    let skill_md = render_skill(&dataset.skill, &result.final_active, &dataset.catalog);
+
+    if let Some(out) = output {
+        if let Err(e) = fs::write(&out, &skill_md) {
+            eprintln!("Failed to write {out}: {e}");
+            return ExitCode::from(1);
+        }
+    }
+
+    if json_out {
+        let mut value = result.to_value();
+        if let Value::Object(map) = &mut value {
+            map.insert("skill_markdown".into(), Value::String(skill_md));
+        }
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&value).unwrap_or_default()
+        );
+        return ExitCode::SUCCESS;
+    }
+
+    print!("{}", skillopt_explain(&dataset, &cfg, &result));
+    ExitCode::SUCCESS
+}
+
 fn main() -> ExitCode {
     let raw: Vec<String> = std::env::args().skip(1).collect();
     if raw.first().map(|s| s == "yool").unwrap_or(false) {
@@ -363,6 +479,9 @@ fn main() -> ExitCode {
     }
     if raw.first().map(|s| s == "hamt").unwrap_or(false) {
         return run_hamt(raw.into_iter().skip(1).collect());
+    }
+    if raw.first().map(|s| s == "skillopt").unwrap_or(false) {
+        return run_skillopt(raw.into_iter().skip(1).collect());
     }
 
     let args = match parse_args() {

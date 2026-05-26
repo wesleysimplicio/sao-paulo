@@ -134,6 +134,33 @@ The pipeline is `combined_weighted_score → offset → author-diversity → out
 
 ---
 
+## SkillOpt — optimize agent skills like you train a network (`lpm skillopt`)
+
+São Paulo ports the optimization loop of [**SkillOpt**](https://microsoft.github.io/SkillOpt/) (Microsoft Research). SkillOpt *"treats a compact natural-language skill document as the trainable state of a frozen language agent"*: a separate optimizer turns scored rollouts into **bounded add/delete/replace edits** on a single skill document, and an edit is accepted **only when it strictly improves a held-out validation score**. `lpm skillopt` reproduces the published machinery deterministically — a textual learning-rate budget, success/failure minibatch separation, a rejected-edit buffer, and an epoch-wise slow/meta update — and emits the single deployable markdown skill plus a per-step training history.
+
+```bash
+lpm skillopt --input rollouts.json --output skill.md   # human-readable summary + optimized skill
+lpm skillopt --input rollouts.json --json               # full training history + result as JSON
+lpm skillopt --input rollouts.json --epochs 5 --edit-budget 2 --batch-size 4
+```
+
+`rollouts.json` carries the starting skill, the scored rollouts (`tasks`, split into `train`/`val`), and a procedure `catalog`:
+
+```json
+{
+  "skill": { "title": "Code agent", "lessons": [] },
+  "catalog": { "abs-paths": "Use absolute paths when editing files." },
+  "tasks": [
+    { "split": "train", "success": false, "requires": ["abs-paths"] },
+    { "split": "val",   "success": false, "requires": ["abs-paths"] }
+  ]
+}
+```
+
+The loop is `rollout (offline) → reflect (success/failure minibatches) → bounded edit → validation gate`, with the edit budget acting as a textual learning rate, a rejected-edit buffer to avoid repeating harmful directions, and an epoch-wise slow update that prunes stale procedures without regressing validation. The control plane is native; the LLM optimizer's reflect step is modeled deterministically (recurrence over offline rollouts) so the result is reproducible and covered by `cargo test`. A worked example ships at [`examples/skillopt-rollouts.json`](examples/skillopt-rollouts.json).
+
+---
+
 ## Patterns
 
 - Canonical spec: [YOOL_TUPLE_HAMT.md](YOOL_TUPLE_HAMT.md)

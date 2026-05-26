@@ -1,0 +1,28 @@
+{
+  "skill": {
+    "title": "Agente de edição de código",
+    "sections": [
+      {
+        "heading": "Objetivo",
+        "text": "Editar arquivos de um repositório com segurança e concluir tarefas verificáveis."
+      }
+    ],
+    "lessons": ["bloat-antigo"]
+  },
+  "catalog": {
+    "abs-paths": "Use caminhos absolutos ao ler/editar arquivos.",
+    "read-before-edit": "Leia o arquivo antes de editar para casar o contexto exato.",
+    "run-tests": "Rode a suíte de testes antes de declarar a tarefa concluída.",
+    "verify-build": { "text": "Confirme que o build passa antes de concluir.", "supersedes": "bloat-antigo" },
+    "bloat-antigo": "Procedimento legado não exigido por nenhuma tarefa."
+  },
+  "tasks": [
+    { "id": "tr1", "split": "train", "success": false, "requires": ["abs-paths", "read-before-edit"] },
+    { "id": "tr2", "split": "train", "success": false, "requires": ["abs-paths", "run-tests"] },
+    { "id": "tr3", "split": "train", "success": false, "requires": ["read-before-edit", "verify-build"] },
+    { "id": "tr4", "split": "train", "success": true,  "requires": ["abs-paths"] },
+    { "id": "va1", "split": "val",   "success": false, "requires": ["abs-paths", "read-before-edit"] },
+    { "id": "va2", "split": "val",   "success": false, "requires": ["run-tests"] },
+    { "id": "va3", "split": "val",   "success": false, "requires": ["verify-build"] }
+  ]
+}

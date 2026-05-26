@@ -10,6 +10,7 @@ pub mod hamt;
 pub mod profile;
 pub mod render;
 pub mod scan;
+pub mod skillopt;
 pub mod text;
 pub mod virality;
 pub mod yool;
