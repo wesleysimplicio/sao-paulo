@@ -108,6 +108,27 @@ Por isso, **o `description` é a coisa mais importante do frontmatter**. Escreva
 
 > Skills `hyperframes*`, `gsap`, `animejs`, `css-animations`, `lottie`, `three`, `waapi`, `tailwind`, `typegpu`, `contribute-catalog`, `remotion-to-hyperframes`, `website-to-hyperframes` são **vendored verbatim** de https://github.com/wesleysimplicio/hyperframes (Apache 2.0). Veja `.skills/UPSTREAM-LICENSE` para o texto da licença e `.skills/NOTICE.md` para atribuição.
 
+### Skills de metodologia (superpowers)
+
+Adaptadas de [superpowers](https://github.com/obra/superpowers) (Jesse Vincent, MIT License) para o formato pt-BR deste projeto. Formam uma **metodologia completa de desenvolvimento**: do brainstorm ao merge, passando por planejamento, TDD, debugging e code review. A skill de entrada é [`using-superpowers/`](./using-superpowers/SKILL.md). Atribuição em `.skills/NOTICE.md`.
+
+| Skill | Quando ativa |
+| --- | --- |
+| [`using-superpowers/`](./using-superpowers/SKILL.md) | **Entrada.** No início de qualquer conversa — descobrir e invocar skills relevantes antes de responder |
+| [`brainstorming/`](./brainstorming/SKILL.md) | Antes de qualquer trabalho criativo — refinar intenção/requisitos em design aprovado antes de implementar |
+| [`writing-plans/`](./writing-plans/SKILL.md) | Quando há spec/requisitos — escrever plano de implementação em tasks pequenas (~2-5 min) com verificação |
+| [`executing-plans/`](./executing-plans/SKILL.md) | Quando há um plano escrito — executar task a task, em ordem, verificando cada step |
+| [`test-driven-development/`](./test-driven-development/SKILL.md) | Ao implementar feature ou bugfix — RED-GREEN-REFACTOR, teste antes do código |
+| [`systematic-debugging/`](./systematic-debugging/SKILL.md) | Ao encontrar bug/falha/comportamento inesperado — achar a causa raiz antes de corrigir |
+| [`verification-before-completion/`](./verification-before-completion/SKILL.md) | Antes de declarar concluído — rodar o comando de verificação e confirmar o output |
+| [`using-git-worktrees/`](./using-git-worktrees/SKILL.md) | Antes de feature que precisa de isolamento — garantir workspace isolado via worktree |
+| [`finishing-a-development-branch/`](./finishing-a-development-branch/SKILL.md) | Implementação completa e testes verdes — decidir merge/PR/cleanup com opções estruturadas |
+| [`dispatching-parallel-agents/`](./dispatching-parallel-agents/SKILL.md) | 2+ tarefas independentes sem estado compartilhado — despachar um agente por domínio em paralelo |
+| [`subagent-driven-development/`](./subagent-driven-development/SKILL.md) | Executar plano na sessão atual — um subagente por task com review em dois estágios |
+| [`requesting-code-review/`](./requesting-code-review/SKILL.md) | Ao concluir task/feature — solicitar review independente contra a spec/requisitos |
+| [`receiving-code-review/`](./receiving-code-review/SKILL.md) | Ao receber feedback — verificar antes de implementar, sem concordância performática |
+| [`writing-skills/`](./writing-skills/SKILL.md) | Criar/editar/validar uma skill — TDD aplicado a documentação de processo |
+
 ### Skills always-on (padrão do projeto)
 
 Três skills são **ativadas automaticamente em toda sessão** via `.claude/settings.json` SessionStart hook:
