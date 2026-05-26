@@ -133,3 +133,10 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 2026-05-26T01:32:43Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
 2026-05-26T01:32:58Z | /home/user/sao-paulo/CHANGELOG.md
 2026-05-26T01:34:40Z | /home/user/sao-paulo/.gitignore
+2026-05-26T11:39:27Z | /home/user/sao-paulo/scripts/setup-simplicio.sh
+2026-05-26T11:39:34Z | /home/user/sao-paulo/.claude/hooks/pre-code-simplicio.sh
+2026-05-26T11:40:05Z | /home/user/sao-paulo/AGENTS.md
+2026-05-26T11:40:15Z | /home/user/sao-paulo/CLAUDE.md
+2026-05-26T11:40:20Z | /home/user/sao-paulo/.github/copilot-instructions.md
+2026-05-26T11:41:34Z | /home/user/sao-paulo/.claude/settings.json
+2026-05-26T11:42:06Z | /home/user/sao-paulo/.claude/settings.json
