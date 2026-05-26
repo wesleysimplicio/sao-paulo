@@ -39,11 +39,12 @@ Binário nativo único (`cargo build --release` → `target/release/lpm`), deps 
 | `lpm yool [--depth N --branching N]` | Tuple-space / HAMT: `batch_spawn` representa 1M+ subagents virtuais sem enumeração | `kernel/yool_tuple_kernel.py` (simplicio-prompt) |
 | `lpm virality --input <file.json>` | Scoring de posts no X (For You): pesos Phoenix, offset, author-diversity, OON, VQV gating | `score_simulator.py` (x-virality-skills) |
 | `lpm hamt [root]` | Build do catálogo YOOL/HAMT do `AGENTS.md` (BLAKE2b-64→30bits, HAMT, id=sha256) — sem Python | `scripts/build_hamt.py` |
+| `lpm skillopt --input <file.json> [--output skill.md]` | Otimiza um documento de skill para modelo congelado: rollout (offline) → reflect (minibatches sucesso/falha) → edits `add`/`delete`/`replace` com orçamento (learning rate textual) → gate de validação estrito, com buffer de rejeição e slow update por época | loop do SkillOpt (Microsoft Research) |
 
 Módulos: `src/scan.rs`, `src/text.rs`, `src/detect.rs`, `src/profile.rs`, `src/render.rs`,
-`src/yool.rs`, `src/virality.rs`, `src/hamt.rs`, CLI em `src/main.rs`, lib em `src/lib.rs`.
+`src/yool.rs`, `src/virality.rs`, `src/hamt.rs`, `src/skillopt.rs`, CLI em `src/main.rs`, lib em `src/lib.rs`.
 Gates: `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check`.
-Skills nativas: `lpm-map`, `lpm-yool`, `lpm-virality`, `lpm-hamt`.
+Skills nativas: `lpm-map`, `lpm-yool`, `lpm-virality`, `lpm-hamt`, `lpm-skillopt`.
 
 ## Histórico de implementação (PRs)
 
@@ -54,7 +55,8 @@ Skills nativas: `lpm-map`, `lpm-yool`, `lpm-virality`, `lpm-hamt`.
 | #3 | Engine de mapeamento nativo em Rust (`lpm map`), ~16x mais rápido que Node | merged |
 | #4 | Rebrand do README para "São Paulo - Brazilian LLM" + seção Benchmark | merged |
 | #5 | Port nativo YOOL/tuple/HAMT (`lpm yool`) | merged |
-| #6 | Port nativo do scoring x-virality (`lpm virality`) | em revisão |
+| #6 | Port nativo do scoring x-virality (`lpm virality`) | merged |
+| #7 | Port nativo do loop do SkillOpt (`lpm skillopt`) — otimização de skill para modelo congelado | em revisão |
 
 ## Benchmark de referência
 
@@ -113,3 +115,20 @@ saída byte-a-byte idêntica. `lpm yool` e `lpm virality` com paridade exata con
 2026-05-26T00:48:25Z | /home/user/sao-paulo/.skills/subagent-driven-development/SKILL.md
 2026-05-26T00:49:30Z | /home/user/sao-paulo/.skills/README.md
 2026-05-26T00:49:39Z | /home/user/sao-paulo/.skills/NOTICE.md
+2026-05-26T01:28:43Z | /home/user/sao-paulo/src/skillopt.rs
+2026-05-26T01:28:46Z | /home/user/sao-paulo/src/lib.rs
+2026-05-26T01:28:51Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:28:57Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:29:05Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:29:08Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:29:22Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:29:51Z | /home/user/sao-paulo/src/main.rs
+2026-05-26T01:30:24Z | /home/user/sao-paulo/examples/skillopt-rollouts.json
+2026-05-26T01:30:54Z | /home/user/sao-paulo/src/skillopt.rs
+2026-05-26T01:31:01Z | /home/user/sao-paulo/src/skillopt.rs
+2026-05-26T01:31:46Z | /home/user/sao-paulo/README.md
+2026-05-26T01:32:13Z | /home/user/sao-paulo/.skills/lpm-skillopt/SKILL.md
+2026-05-26T01:32:19Z | /home/user/sao-paulo/.skills/README.md
+2026-05-26T01:32:39Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
+2026-05-26T01:32:43Z | /home/user/sao-paulo/IMPLEMENTATION_NOTES.md
+2026-05-26T01:32:58Z | /home/user/sao-paulo/CHANGELOG.md

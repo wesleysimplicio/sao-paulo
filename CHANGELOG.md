@@ -7,6 +7,7 @@ Format follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) an
 ## [Unreleased]
 
 ### Added
+- Native (Rust) port of the **SkillOpt** optimization loop (Microsoft Research) as `lpm skillopt` (`src/skillopt.rs`): treats a natural-language skill document as the trainable state of a frozen agent and turns scored rollouts into bounded `add`/`delete`/`replace` edits, accepting an edit only when it strictly improves a held-out validation score. Reproduces the published machinery deterministically — a textual learning-rate edit budget, success/failure minibatch separation, a rejected-edit buffer, and an epoch-wise slow/meta update — and emits the single deployable markdown skill plus a per-step training history (`--json`). Ships the `lpm-skillopt` skill and a worked dataset at `examples/skillopt-rollouts.json`; covered by `cargo test`.
 - Root-level `YOOL_TUPLE_HAMT.md` vendored alongside the existing `docs/` copy so the canonical pattern spec is reachable directly from the repository root and ships with the npm package.
 - `build-hamt-catalog` wrapper plus stdlib-only `scripts/build_hamt.py`, enabling `npx @wesleysimplicio/llm-project-mapper build-hamt-catalog` to emit `.catalog/agents.json`.
 - Runtime scaffold defaults for `.catalog/.gitkeep`, `.catalog/agents.json`, `.receipts/.gitkeep`, and optional `mcp/server.{ts,py}` edge adapters via `--mcp-edge`.

@@ -90,6 +90,7 @@ Por isso, **o `description` é a coisa mais importante do frontmatter**. Escreva
 | [`lpm-yool/`](./lpm-yool/SKILL.md) | **Engine nativo.** Tuple-space/HAMT via `lpm yool` — `batch_spawn` para 1M+ subagents virtuais |
 | [`lpm-virality/`](./lpm-virality/SKILL.md) | **Engine nativo.** Scoring de posts no X (For You) via `lpm virality` |
 | [`lpm-hamt/`](./lpm-hamt/SKILL.md) | **Engine nativo.** Build do catálogo YOOL/HAMT do AGENTS.md via `lpm hamt` (sem Python) |
+| [`lpm-skillopt/`](./lpm-skillopt/SKILL.md) | **Engine nativo.** Otimizar um documento de skill para modelo congelado via `lpm skillopt` — porta do loop do SkillOpt (rollout→reflect→edit→gate) |
 | [`hyperframes/`](./hyperframes/SKILL.md) | Autoria de composição HTML para vídeo (timing, GSAP, captions, transitions, audio-reactive) |
 | [`hyperframes-cli/`](./hyperframes-cli/SKILL.md) | CLI `npx hyperframes` (init, lint, inspect, preview, render, doctor) |
 | [`hyperframes-media/`](./hyperframes-media/SKILL.md) | Preprocessing de assets (`tts`, `transcribe`, `remove-background`) |
